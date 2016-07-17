@@ -50,4 +50,34 @@ package object common {
     val td = taskD
     (ta.join(), tb.join(), tc.join(), td)
   }
+
+  /**
+    * Returns array of ranges. Each pair of array repsent a page range similar to content in a book
+    * @param whole a number to be divided
+    * @param numTasks required number of tasks
+    * @return
+    */
+  def getRanges(whole: Int, numTasks: Int): Array[Int] = {
+    val parts = splitIntoParts(whole, numTasks)
+    parts.foldLeft(Array(0))((arr, e) => arr :+ parts.take(arr.length - 1).sum + e)
+  }
+
+  /**
+    * Split a number into equal parts
+    *
+    * @param whole - a number to be divided into equal parts
+    * @param parts - number of required parts
+    * @return array of parts
+    */
+  def splitIntoParts(whole: Int, parts: Int): Array[Int] = {
+    val arr = new Array[Int](parts)
+    var w = whole
+
+    for (i <- arr.indices) {
+      arr(i) = (w + parts - i - 1) / (parts - i)
+      w -= arr(i)
+    }
+
+    arr
+  }
 }

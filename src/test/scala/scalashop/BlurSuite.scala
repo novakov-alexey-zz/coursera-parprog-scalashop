@@ -59,6 +59,16 @@ class BlurSuite extends FunSuite {
     check(2, 2, 0)
   }
 
+  def printMatrix(img: Img) = {
+    for (j <- 0 until img.height) {
+      for (i <- 0 until img.width) {
+        print(img(i, j) + " ")
+      }
+      println
+    }
+  }
+
+
   test("VerticalBoxBlur.blur with radius 2 should correctly blur the entire " +
     "4x3 image") {
     val w = 4
@@ -70,6 +80,13 @@ class BlurSuite extends FunSuite {
     src(0, 2) = 6; src(1, 2) = 7; src(2, 2) = 8; src(3, 2) = 11
 
     VerticalBoxBlur.blur(src, dst, 0, 4, 2)
+
+    println("source: ")
+    printMatrix(src)
+
+    println
+    println("actual: ")
+    printMatrix(dst)
 
     def check(x: Int, y: Int, expected: Int) =
       assert(dst(x, y) == expected,

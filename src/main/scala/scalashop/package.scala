@@ -43,28 +43,25 @@ package object scalashop {
 
   /** Computes the blurred RGBA value of a single pixel of the input image. */
   def boxBlurKernel(src: Img, x: Int, y: Int, radius: Int): RGBA = {
-    var i = clamp(x - radius, 0, src.width)
-    val n = clamp(x + radius, 0, src.width)
-    var j = clamp(y - radius, 0, src.height)
-    val m = clamp(y + radius, 0, src.height)
-    val pixels = Math.max(0, (n + 1 - i) * (m + 1 - j) - 1)
+    val left = clamp(x - radius, 0, src.width - 1)
+    val right = clamp(x + radius, 0, src.width - 1)
+    val top = clamp(y - radius, 0, src.height - 1)
+    val bottom = clamp(y + radius, 0, src.height - 1)
+    implicit val pixels = Math.max(0, (right + 1 - left) * (bottom + 1 - top))
 
     if (pixels == 0) src(x, y)
     else {
       var currSum: Accum = (0, 0, 0, 0)
 
-      while (i <= n) {
-        while (j <= m) {
-          if (i != x || j != y) {
+      for (i <- left to right if i < src.width) {
+        for (j <- top to bottom if j < src.height) {
             currSum = sumComponents(currSum, src(i, j))
-          }
-          j += 1
         }
-        j = clamp(y - radius, 0, src.height)
-        i += 1
       }
 
-      rgba(currSum._1 / pixels, currSum._2 / pixels, currSum._3 / pixels, currSum._4 / pixels)
+      def avg(a: Double) (implicit b: Int) = (a / b).asInstanceOf[Int]
+
+      rgba(avg(currSum._1), avg(currSum._2), avg(currSum._3), avg(currSum._4))
     }
   }
 
